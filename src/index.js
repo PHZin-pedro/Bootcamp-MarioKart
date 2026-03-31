@@ -99,45 +99,74 @@ async function playRaceEngine(character1, character2) {
     }
 
     if (block === "CONFRONTO") {
-      let powerResult1 = diceResult1 + character1.PODER;
-      let powerResult2 = diceResult2 + character2.PODER;
+  let powerResult1 = diceResult1 + character1.PODER;
+  let powerResult2 = diceResult2 + character2.PODER;
 
-      console.log(`${character1.NOME} confrontou com ${character2.NOME}! 🥊`);
+  console.log(`${character1.NOME} confrontou com ${character2.NOME}! 🥊`);
 
-      await logRollResult(
-        character1.NOME,
-        "poder",
-        diceResult1,
-        character1.PODER
-      );
+  await logRollResult(
+    character1.NOME,
+    "poder",
+    diceResult1,
+    character1.PODER
+  );
 
-      await logRollResult(
-        character2.NOME,
-        "poder",
-        diceResult2,
-        character2.PODER
-      );
+  await logRollResult(
+    character2.NOME,
+    "poder",
+    diceResult2,
+    character2.PODER
+  );
 
-      if (powerResult1 > powerResult2 && character2.PONTOS > 0) {
-        console.log(
-          `${character1.NOME} venceu o confronto! ${character2.NOME} perdeu 1 ponto 🐢`
-        );
-        character2.PONTOS--;
-      }
+  // 🎲 item aleatório
+  function getRandomItem() {
+    return Math.random() < 0.5
+      ? { nome: "casco 🐢", dano: 1 }
+      : { nome: "bomba 💣", dano: 2 };
+  }
 
-      if (powerResult2 > powerResult1 && character1.PONTOS > 0) {
-        console.log(
-          `${character2.NOME} venceu o confronto! ${character1.NOME} perdeu 1 ponto 🐢`
-        );
-        character1.PONTOS--;
-      }
+  if (powerResult1 > powerResult2) {
+    const item = getRandomItem();
 
-      console.log(
-        powerResult2 === powerResult1
-          ? "Confronto empatado! Nenhum ponto foi perdido"
-          : ""
-      );
-    }
+    console.log(
+      `${character1.NOME} venceu o confronto e usou ${item.nome}!`
+    );
+
+    // dano no player2
+    character2.PONTOS = Math.max(0, character2.PONTOS - item.dano);
+
+    console.log(
+      `${character2.NOME} perdeu ${item.dano} ponto(s)!`
+    );
+
+    // turbo
+    character1.PONTOS++;
+    console.log(`${character1.NOME} ganhou um turbo! +1 ponto 🚀`);
+  }
+
+  else if (powerResult2 > powerResult1) {
+    const item = getRandomItem();
+
+    console.log(
+      `${character2.NOME} venceu o confronto e usou ${item.nome}!`
+    );
+
+    // dano no player1
+    character1.PONTOS = Math.max(0, character1.PONTOS - item.dano);
+
+    console.log(
+      `${character1.NOME} perdeu ${item.dano} ponto(s)!`
+    );
+
+    // turbo
+    character2.PONTOS++;
+    console.log(`${character2.NOME} ganhou um turbo! +1 ponto 🚀`);
+  }
+
+  else {
+    console.log("Confronto empatado! Nenhum efeito aplicado.");
+  }
+}
 
     // verificando o vencedor
     if (totalTestSkill1 > totalTestSkill2) {
